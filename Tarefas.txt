@@ -1,0 +1,14 @@
+##Tarefas de Modo Historia
+
+Cada um deve atualizar os blocos de dentro de Historia.Java colocando os dialogos dentro de suas respectivas classes e trazendo elas para o CMD.
+
+## Criterios de Aceite:
+
+1- Print da Historia Fromatada dentro do quadro
+2- Print do Sprinte
+3 -  Continuidade do modo historia sem quebra por Bug
+
+- Silva  - Ato 1 - Preencher as Historias do Primeiro Ato e colocar no App.java - 21/09 
+- Bryan - Ato 2 -  Preencher as Historias do Primeiro Ato e colocar no App.java - 21/09 
+- Victor - Ato 3 - Preencher as Historias do Primeiro Ato e colocar no App.java - 21/09 
+- Ronaldo - Ato 4 - Preencher as Historias do Primeiro Ato e colocar no App.java - 21/09 
