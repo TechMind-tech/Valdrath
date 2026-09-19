@@ -40,6 +40,7 @@ public class App {
 
             Personagem.registro(Personagem.Heroi);
             Historia.Introducao(scanner);
+            Historia.Introducao(scanner);
             
             
             Personagem.registro(Personagem.Heroi);
