@@ -1,41 +1,67 @@
-
 import java.util.Scanner;
+
+/*
+ * Loja
+ * ----
+ * A loja de Korrin, no fim do Ato 2. O heroi pode gastar o ouro que juntou
+ * comprando uma espada melhor ou pocoes de cura.
+ *
+ * Tudo mexe no inventario REAL do Personagem (ouro, pocoes, espada), entao
+ * as compras aqui repercutem nas batalhas seguintes.
+ */
 public class Loja {
 
-   public static void mostrarOpcoesLoja() {
-        System.out.println("Bem-vindo à Loja!");
-        System.out.println("1. Comprar Espada de Ferro Draco");
-        System.out.println("2. Comprar Poção de Cura");
-        System.out.println("3. Sair da Loja");
+    // Mostra o cardapio com os precos vindos das "fabricas" de Item.
+    static void mostrarOpcoesLoja(Personagem p) {
+        Item espada = Item.espadaDraco();
+        Item pocao = Item.pocaoCura();
+        System.out.println();
+        System.out.println("=== FORJA DE KORRIN ===");
+        System.out.println("Seu ouro: " + p.ouro + " | Pocoes: " + p.pocoes);
+        System.out.println("  [1] " + espada.nome + " (+" + espada.dano + " dano) - " + espada.preco + " ouro");
+        System.out.println("  [2] " + pocao.nome + " (cura " + pocao.cura + ") - " + pocao.preco + " ouro");
+        System.out.println("  [3] Sair da loja");
+        System.out.print("  > ");
     }
-    public static void abrirLoja(Personagem personagem) {
 
-            int opcao = 0;
-        while (opcao != 1 && opcao != 2 && opcao != 3) {
-            mostrarOpcoesLoja();
-            System.out.print("Escolha uma opção: ");
-            opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpar o buffer do scanner
+    // Abre a loja e fica em loop ate o jogador escolher sair.
+    public static void abrirLoja(Scanner scanner, Personagem personagem) {
+        boolean saiu = false;
+        while (!saiu) {
+            mostrarOpcoesLoja(personagem);
+            String entrada = scanner.nextLine().trim();
 
-            switch (opcao) {
-                case 1:
-                    System.out.println("Você comprou a Espada de Ferro Draco!");
-                    personagem.espada = Item.espadaFerro().nome;
+            switch (entrada) {
+                case "1": {
+                    Item espada = Item.espadaDraco();
+                    if (personagem.ouro >= espada.preco) {
+                        personagem.ouro -= espada.preco;
+                        personagem.espada = espada;
+                        System.out.println("Voce comprou a " + espada.nome + "! Agora ela esta equipada.");
+                    } else {
+                        System.out.println("Ouro insuficiente para a " + espada.nome + ".");
+                    }
                     break;
-                case 2:
-                    System.out.println("Você comprou a Poção de Cura!");
-                    // Lógica para adicionar a poção ao inventário do personagem
+                }
+                case "2": {
+                    Item pocao = Item.pocaoCura();
+                    if (personagem.ouro >= pocao.preco) {
+                        personagem.ouro -= pocao.preco;
+                        personagem.pocoes++;
+                        System.out.println("Voce comprou uma " + pocao.nome + ". Pocoes: " + personagem.pocoes);
+                    } else {
+                        System.out.println("Ouro insuficiente para a " + pocao.nome + ".");
+                    }
                     break;
-                case 3:
-                    System.out.println("Saindo da loja...");
+                }
+                case "3":
+                    System.out.println("Voce fecha a bolsa e se despede de Korrin.");
+                    saiu = true;
                     break;
                 default:
-                    System.out.println("Opção inválida! Tente novamente.");
+                    System.out.println("Opcao invalida. Tente novamente.");
                     break;
             }
-        }   
-    
-
+        }
     }
-    
 }
