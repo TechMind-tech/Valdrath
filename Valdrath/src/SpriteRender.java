@@ -9,8 +9,15 @@ import javax.imageio.ImageIO;          // sabe abrir arquivos de imagem (.png)
  * Esta classe tem uma unica responsabilidade: pegar uma imagem .png e
  * "desenha-la" no terminal usando blocos coloridos.
  *
- * A ideia (bem de estudante): cada pixel da imagem vira dois quadradinhos
- * "██" pintados com a mesma cor do pixel. Assim a figura aparece no CMD.
+ * A ideia (bem de estudante): cada pixel da imagem vira dois espacos com
+ * a COR DE FUNDO igual a cor do pixel. Assim a figura aparece no CMD como
+ * um "pixel art" feito de retangulos coloridos.
+ *
+ * Por que espaco e nao um caractere de bloco? Porque o console do Windows
+ * normalmente nao esta configurado em UTF-8. Se a gente tentasse imprimir
+ * um caractere especial (tipo o bloco "█"), ele vira "?" na tela e o
+ * sprite fica ilegivel. Espaco em branco e ASCII puro, entao sempre
+ * funciona, em qualquer codepage do Windows.
  *
  * Para o resto do jogo nao precisar decorar o nome dos arquivos, criamos
  * o metodo mostrar("chave"), que traduz uma chave simples (ex: "lobo")
@@ -33,6 +40,45 @@ public class SpriteRender {
         limparTela();
         String arquivo = PASTA + traduzirChave(chave) + ".png";
         desenhar(arquivo);
+    }
+
+    /*
+     * localizarArquivo(nomeArquivo)
+     * O problema: "sprites/lobo.png" so funciona se o programa for
+     * executado de dentro da pasta "Valdrath" (onde a pasta sprites
+     * mora). Se alguem roda o jogo de outra pasta (ex: da pasta bin,
+     * ou abrindo o VS Code na pasta de cima), o caminho relativo nao
+     * acha o arquivo e cai no aviso de "sprite indisponivel".
+     *
+     * Para resolver sem depender de configuracao, a gente tenta alguns
+     * caminhos possiveis, na ordem, e usa o primeiro que existir:
+     *   1) o caminho relativo simples (funciona no caso normal)
+     *   2) o mesmo caminho, mas subindo pastas a partir de onde o
+     *      programa foi executado (java sempre sabe o "user.dir")
+     */
+    static File localizarArquivo(String nomeArquivo) {
+        File direto = new File(nomeArquivo);
+        if (direto.exists()) {
+            return direto;
+        }
+
+        // Tenta subir ate 3 pastas a partir de onde o programa rodou,
+        // procurando a pasta "sprites" em algum nivel acima.
+        File pasta = new File(System.getProperty("user.dir"));
+        for (int i = 0; i < 3; i++) {
+            File tentativa = new File(pasta, nomeArquivo);
+            if (tentativa.exists()) {
+                return tentativa;
+            }
+            pasta = pasta.getParentFile();
+            if (pasta == null) {
+                break;
+            }
+        }
+
+        // Nao achou em lugar nenhum: devolve o caminho original mesmo,
+        // pra mensagem de erro mostrar o que a gente tentou abrir.
+        return direto;
     }
 
     /*
@@ -97,11 +143,13 @@ public class SpriteRender {
     /*
      * desenhar(caminho)
      * Abre o arquivo de imagem e percorre pixel por pixel (linha por linha).
-     * Pixel transparente vira espaco; pixel colorido vira dois blocos "██".
+     * Pixel transparente vira so espaco sem cor; pixel colorido vira dois
+     * espacos com o FUNDO pintado da cor do pixel.
      */
     public static void desenhar(String caminho) {
         try {
-            BufferedImage imagem = ImageIO.read(new File(caminho));
+            File arquivo = localizarArquivo(caminho);
+            BufferedImage imagem = ImageIO.read(arquivo);
 
             // Percorre todas as linhas (y) e, dentro de cada linha, todas as colunas (x).
             for (int y = 0; y < imagem.getHeight(); y++) {
@@ -115,8 +163,12 @@ public class SpriteRender {
                         int r = pixel.getRed();
                         int g = pixel.getGreen();
                         int b = pixel.getBlue();
-                        // Pinta dois blocos com a cor exata do pixel (formato RGB do terminal).
-                        System.out.print(ESC + "[38;2;" + r + ";" + g + ";" + b + "m" + "██");
+                        // Pinta o FUNDO de dois espacos com a cor do pixel.
+                        // Usamos espaco (nao o caractere de bloco "█") porque o
+                        // console do Windows normalmente nao esta em UTF-8 e
+                        // trocava o bloco por "?". Espaco e ASCII puro, entao
+                        // funciona em qualquer codepage do Windows.
+                        System.out.print(ESC + "[48;2;" + r + ";" + g + ";" + b + "m" + "  ");
                     }
                 }
                 System.out.println(ESC + "[0m");           // fim da linha: desliga a cor

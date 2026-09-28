@@ -1,21 +1,11 @@
-/*
- * Inimigo
- * -------
- * Representa qualquer criatura que luta contra o heroi: um lobo, um
- * esqueleto, ou ate um chefe (boss).
- *
- * Assim como Item, usamos metodos "fabrica" (static) para criar cada
- * inimigo do roteiro ja com os atributos certos. Fica facil de ler e
- * de ajustar a dificuldade.
- */
+// Classe que representa os inimigos que o jogador enfrenta nas batalhas
 public class Inimigo {
-    String nome;     // nome exibido na batalha
-    int vida;        // vida atual
-    int dano;        // quanto de dano ele causa ao atacar
-    int ouro;        // ouro que o heroi ganha ao vence-lo
-    boolean boss;    // verdadeiro se for um chefe (batalha mais dura)
+    String nome;
+    int vida;
+    int dano;
+    int ouro;
+    boolean boss;
 
-    // Construtor completo.
     public Inimigo(String nome, int vida, int dano, int ouro, boolean boss) {
         this.nome = nome;
         this.vida = vida;
@@ -24,26 +14,26 @@ public class Inimigo {
         this.boss = boss;
     }
 
-    // Verdadeiro enquanto o inimigo tiver vida.
     public boolean estaVivo() {
-        return vida > 0;
+        if (vida > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    // Tira vida do inimigo.
     public void receberDano(int quantidade) {
-        vida -= quantidade;
+        vida = vida - quantidade;
         if (vida < 0) {
             vida = 0;
         }
     }
 
-    // Mostra os dados do inimigo (opcional, para depurar/testar).
     public void registro() {
         System.out.println("Inimigo: " + nome + " | Vida: " + vida + " | Dano: " + dano);
     }
 
-    // ----------------- INIMIGOS COMUNS -----------------
-
+    // inimigos normais que aparecem durante a historia
     public static Inimigo loboSombrio() {
         return new Inimigo("Lobo Sombrio", 40, 6, 15, false);
     }
@@ -68,8 +58,7 @@ public class Inimigo {
         return new Inimigo("Cavaleiro da Ordem", 80, 13, 40, false);
     }
 
-    // ----------------- CHEFES (BOSSES) -----------------
-
+    // chefes (bosses), aparecem no final de cada rota da historia
     public static Inimigo aldricVerdadeiro() {
         return new Inimigo("Aldric Verdadeiro", 140, 16, 0, true);
     }

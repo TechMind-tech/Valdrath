@@ -1,25 +1,16 @@
-/*
- * Personagem
- * ----------
- * Representa o heroi controlado pelo jogador.
- * Guarda os atributos (vida, forca, etc.), o ouro, a espada equipada
- * e quantas pocoes ele tem no inventario.
- *
- * Os metodos ajudam o resto do jogo a mexer nesses valores de um jeito
- * seguro (ex: nao deixar a vida passar do maximo).
- */
+// Classe do personagem principal (o heroi que o jogador controla)
 public class Personagem {
-    String nome;          // nome escolhido pelo jogador
-    int forca;            // usada para calcular o dano dos ataques
-    int inteligencia;     // atributo de RPG (guardado para exibir)
-    int agilidade;        // atributo de RPG (guardado para exibir)
-    int vida;             // vida atual
-    int vidaMaxima;       // vida maxima (a vida nunca passa disso)
-    int ouro;             // dinheiro para gastar na loja
-    int pocoes;           // quantas pocoes de cura estao no inventario
-    Item espada;          // arma equipada no momento
+    String nome;
+    int forca;
+    int inteligencia;
+    int agilidade;
+    int vida;
+    int vidaMaxima;
+    int ouro;
+    int pocoes;
+    Item espada;
 
-    // Construtor: monta o heroi com os valores iniciais.
+    // metodo construtor, roda quando a gente cria um personagem novo
     public Personagem(String nome, int forca, int inteligencia, int agilidade, int vida) {
         this.nome = nome;
         this.forca = forca;
@@ -27,12 +18,12 @@ public class Personagem {
         this.agilidade = agilidade;
         this.vida = vida;
         this.vidaMaxima = vida;
-        this.ouro = 80;                 // comeca com um pouco de ouro
-        this.pocoes = 2;                // e duas pocoes de cura
+        this.ouro = 80;
+        this.pocoes = 2;
         this.espada = Item.espadaFerro();
     }
 
-    // Mostra a ficha do personagem na tela.
+    // mostra os dados do personagem
     public void registro() {
         System.out.println("=== FICHA ===");
         System.out.println("Nome: " + nome);
@@ -46,52 +37,53 @@ public class Personagem {
         System.out.println("=============");
     }
 
-    // Verdadeiro enquanto o heroi tiver vida.
+    // retorna true se ainda tiver vida
     public boolean estaVivo() {
-        return vida > 0;
+        if (vida > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    // Tira vida do heroi (sem deixar ficar negativa, so por organizacao).
+    // tira vida do personagem quando ele leva dano
     public void receberDano(int quantidade) {
-        vida -= quantidade;
+        vida = vida - quantidade;
         if (vida < 0) {
             vida = 0;
         }
     }
 
-    // Recupera vida (sem passar da vida maxima).
+    // aumenta a vida (usado quando bebe pocao)
     public void curar(int quantidade) {
-        vida += quantidade;
+        vida = vida + quantidade;
         if (vida > vidaMaxima) {
             vida = vidaMaxima;
         }
     }
 
-    // Usa uma pocao: cura e diminui o estoque. Retorna false se nao houver pocao.
+    // usa uma pocao do inventario, se tiver
     public boolean usarPocao() {
         if (pocoes <= 0) {
             return false;
         }
-        pocoes--;
+        pocoes = pocoes - 1;
         curar(Item.pocaoCura().cura);
         return true;
     }
 
-    // --- metodos usados pelas escolhas do roteiro ---
-
-    // Doar tudo para Brenna (Escolha 2, opcao 1).
+    // usado na escolha de doar tudo pra vila
     public void zerarOuro() {
         ouro = 0;
     }
 
-    // Gastar/entregar todas as pocoes (parte da doacao).
     public void gastarPocoes() {
         pocoes = 0;
     }
 
-    // Saquear a vila (Escolha 2, opcao 3): ganha recursos.
+    // usado na escolha de saquear a vila
     public void saquearVila() {
-        ouro += 60;
-        pocoes += 2;
+        ouro = ouro + 60;
+        pocoes = pocoes + 2;
     }
 }
