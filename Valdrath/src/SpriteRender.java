@@ -46,15 +46,23 @@ public class SpriteRender {
      * localizarArquivo(nomeArquivo)
      * O problema: "sprites/lobo.png" so funciona se o programa for
      * executado de dentro da pasta "Valdrath" (onde a pasta sprites
-     * mora). Se alguem roda o jogo de outra pasta (ex: da pasta bin,
-     * ou abrindo o VS Code na pasta de cima), o caminho relativo nao
-     * acha o arquivo e cai no aviso de "sprite indisponivel".
+     * mora). Se alguem roda o jogo de outra pasta (ex: abrindo o VS
+     * Code na pasta de cima do projeto), o caminho relativo nao acha
+     * o arquivo e cai no aviso de "sprite indisponivel".
      *
-     * Para resolver sem depender de configuracao, a gente tenta alguns
-     * caminhos possiveis, na ordem, e usa o primeiro que existir:
-     *   1) o caminho relativo simples (funciona no caso normal)
-     *   2) o mesmo caminho, mas subindo pastas a partir de onde o
-     *      programa foi executado (java sempre sabe o "user.dir")
+     * Para resolver sem depender de configuracao, a gente monta uma
+     * lista de "pastas candidatas" onde a pasta sprites poderia estar,
+     * e testa uma por uma até achar o arquivo:
+     *
+     *   1) a pasta de onde o programa foi executado (user.dir) e as
+     *      pastas acima dela (caso rodem de dentro de "bin", por
+     *      exemplo)
+     *   2) a pasta onde o .class do jogo realmente esta (isso o Java
+     *      sabe de forma exata, nao depende de onde o comando "java"
+     *      foi chamado) e as pastas acima dela
+     *   3) dentro dessas pastas, tambem olhamos numa subpasta chamada
+     *      "Valdrath", que e o caso de alguem rodar o jogo estando um
+     *      nivel ACIMA da pasta do projeto
      */
     static File localizarArquivo(String nomeArquivo) {
         File direto = new File(nomeArquivo);
@@ -62,23 +70,51 @@ public class SpriteRender {
             return direto;
         }
 
-        // Tenta subir ate 3 pastas a partir de onde o programa rodou,
-        // procurando a pasta "sprites" em algum nivel acima.
-        File pasta = new File(System.getProperty("user.dir"));
-        for (int i = 0; i < 3; i++) {
-            File tentativa = new File(pasta, nomeArquivo);
+        for (File pastaBase : pastasCandidatas()) {
+            // tenta "pastaBase/sprites/arquivo.png"
+            File tentativa = new File(pastaBase, nomeArquivo);
             if (tentativa.exists()) {
                 return tentativa;
             }
-            pasta = pasta.getParentFile();
-            if (pasta == null) {
-                break;
+            // tenta "pastaBase/Valdrath/sprites/arquivo.png"
+            File tentativaFilha = new File(new File(pastaBase, "Valdrath"), nomeArquivo);
+            if (tentativaFilha.exists()) {
+                return tentativaFilha;
             }
         }
 
         // Nao achou em lugar nenhum: devolve o caminho original mesmo,
         // pra mensagem de erro mostrar o que a gente tentou abrir.
         return direto;
+    }
+
+    // Monta a lista de pastas onde vamos procurar "sprites/...".
+    static java.util.List<File> pastasCandidatas() {
+        java.util.List<File> pastas = new java.util.ArrayList<>();
+
+        // Ponto 1: pasta de onde o comando "java" foi chamado.
+        adicionarComPais(pastas, new File(System.getProperty("user.dir")));
+
+        // Ponto 2: pasta onde o .class deste programa realmente esta
+        // (ex: .../Valdrath/bin). Assim, mesmo que o comando "java"
+        // tenha sido chamado de outro lugar, a gente acha o projeto.
+        try {
+            File origem = new File(SpriteRender.class.getProtectionDomain()
+                    .getCodeSource().getLocation().toURI());
+            adicionarComPais(pastas, origem);
+        } catch (Exception e) {
+            // Se nao conseguir descobrir, so ignora e segue com o que tem.
+        }
+
+        return pastas;
+    }
+
+    // Adiciona a pasta recebida e ate 3 pastas acima dela na lista.
+    static void adicionarComPais(java.util.List<File> pastas, File pasta) {
+        for (int i = 0; i < 4 && pasta != null; i++) {
+            pastas.add(pasta);
+            pasta = pasta.getParentFile();
+        }
     }
 
     /*
