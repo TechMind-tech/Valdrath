@@ -1,29 +1,19 @@
 import java.util.Scanner;
 
-/*
- * Historia
- * --------
- * Aqui vive TODO o roteiro de "As Cinzas de Valdrath": prologo, os quatro atos,
- * as cinco escolhas com karma e os tres finais (Heroi, Vilao, Neutro).
- *
- * Como funciona:
- *   - jogar(scanner) e o ponto de entrada: chama o prologo, os atos em ordem
- *     e, no fim, decide o final pelo karma acumulado.
- *   - O estado (honra, ambicao, flags) fica em campos static desta classe,
- *     zerados no comeco de cada partida por resetarEstado().
- *   - Cada cena e um metodo privado, com as caixas de dialogo do roteiro.
- *
- * As batalhas usam a classe Batalha; os sprites usam SpriteRender.mostrar(chave).
- */
+// Essa classe tem toda a historia do jogo "As Cinzas de Valdrath": o
+// prologo, os 4 atos, as 5 escolhas que o jogador faz e os 3 finais
+// possiveis (Heroi, Vilao ou Neutro).
+//
+// jogar(scanner) e o metodo principal: ele chama o prologo e os atos
+// em ordem, e no final decide qual final o jogador ganhou de acordo
+// com os pontos de honra e ambicao que ele foi somando nas escolhas.
 public class Historia {
 
-    // ----------------- ESTADO DA PARTIDA -----------------
-
-    // Karma (portas dos finais: >= 3 no lado dominante).
+    // pontos de honra e ambicao (decidem o final no ultimo ato)
     static int honra;
     static int ambicao;
 
-    // Flags de narrativa.
+    // variaveis que guardam o que o jogador escolheu durante a historia
     static boolean pistaDesertor;      // ouviu o bandido no Ato 1
     static boolean vilaSalva;          // doou para Brenna
     static boolean vilaSaqueada;       // saqueou Greywatch
@@ -35,9 +25,9 @@ public class Historia {
     static boolean verdadeNegada;      // recusou-se a acreditar
     static boolean pactoVoz;           // cobicou a Chama
     static boolean malacharAliado;     // Malachar sobe com voce
-    static int confiancaLyra;          // termometro interno (nunca mostrado)
+    static int confiancaLyra;          // nao aparece na tela, so controla algumas falas
 
-    // Reinicia o estado no comeco de cada nova partida.
+    // zera tudo no comeco de uma partida nova
     static void resetarEstado() {
         honra = 0;
         ambicao = 0;
@@ -55,20 +45,18 @@ public class Historia {
         confiancaLyra = 0;
     }
 
-    // ----------------- UTILITARIOS DE CENA -----------------
-
-    // Espera o jogador apertar ENTER para seguir (ritmo de leitura).
+    // espera o jogador apertar ENTER pra continuar lendo
     static void aguardar(Scanner scanner) {
         scanner.nextLine();
     }
 
-    // Mostra um sprite (limpa a tela e desenha). Nunca quebra: chaves
-    // desconhecidas caem no sprite padrao dentro de SpriteRender.
+    // mostra o sprite da cena (chama a classe SpriteRender)
     static void sprite(String chave) {
         SpriteRender.mostrar(chave);
     }
 
-    // Le uma escolha numerica valida (entre 1 e maxOpcao). Repete ate acertar.
+    // pede pro jogador digitar um numero entre 1 e maxOpcao, e repete
+    // a pergunta se ele digitar algo invalido
     static int lerEscolha(Scanner scanner, int maxOpcao) {
         while (true) {
             System.out.print("   > ");
@@ -79,20 +67,17 @@ public class Historia {
                     return v;
                 }
             } catch (NumberFormatException e) {
-                // cai no aviso abaixo
+                // se nao for numero, cai no aviso abaixo
             }
             System.out.println("   (Escolha um numero entre 1 e " + maxOpcao + ".)");
         }
     }
 
-    // ===================================================================
-    //  PONTO DE ENTRADA
-    // ===================================================================
-
+    // metodo principal, chamado pelo App quando o jogador escolhe "Jogar"
     public static void jogar(Scanner scanner) {
         resetarEstado();
 
-        // O heroi comeca com atributos base; o nome vem no prologo.
+        // atributos iniciais do heroi (o nome e trocado no prologo)
         Personagem jogador = new Personagem("Recruta", 12, 8, 10, 100);
 
         prologo(scanner, jogador);
@@ -102,9 +87,7 @@ public class Historia {
         ato4(scanner, jogador);
     }
 
-    // ===================================================================
-    //  PROLOGO — A CIDADELA DA AURORA
-    // ===================================================================
+    // ================== PROLOGO - A CIDADELA DA AURORA ==================
 
     static void prologo(Scanner scanner, Personagem jogador) {
         sprite("cenario_chama_eterna");
@@ -223,9 +206,7 @@ public class Historia {
         aguardar(scanner);
     }
 
-    // ===================================================================
-    //  ATO 1 — A FLORESTA DE THORNWOOD
-    // ===================================================================
+    // ================== ATO 1 - A FLORESTA DE THORNWOOD ==================
 
     static void ato1(Scanner scanner, Personagem jogador) {
         // A1-01 Chegada

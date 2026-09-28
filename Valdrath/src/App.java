@@ -2,18 +2,13 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-/*
- * App
- * ---
- * Ponto de entrada do jogo "As Cinzas de Valdrath".
- * Mostra o menu principal e, ao escolher Jogar, entrega o controle para
- * Historia.jogar(scanner), que roda o roteiro inteiro (prologo -> atos ->
- * final decidido pelo karma).
- */
+// Essa e a classe principal do jogo "As Cinzas de Valdrath".
+// Ela mostra o menu e, quando o jogador escolhe Jogar, chama a classe
+// Historia que roda toda a aventura (prologo, os 4 atos e o final).
 public class App {
 
     public static void main(String[] args) {
-        // Garante UTF-8 na saida para as caixas de dialogo nao desalinharem.
+        // isso aqui e so pra tentar deixar os acentos certos no console
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
 
         Scanner scanner = new Scanner(System.in);
@@ -23,23 +18,21 @@ public class App {
             mostrarMenu();
             String entrada = scanner.nextLine().trim();
 
-            switch (entrada) {
-                case "1":
-                    Historia.jogar(scanner);
-                    System.out.println();
-                    System.out.println("=== FIM DA JORNADA. Obrigado por jogar! ===");
-                    System.out.println();
-                    break;
-                case "2":
-                    mostrarSobre(scanner);
-                    break;
-                case "3":
-                    sair = true;
-                    System.out.println("Ate a proxima, cavaleiro.");
-                    break;
-                default:
-                    System.out.println("Opcao invalida. Digite 1, 2 ou 3.");
-                    break;
+            if (entrada.equals("1")) {
+                Historia.jogar(scanner);
+                System.out.println();
+                System.out.println("=== FIM DA JORNADA. Obrigado por jogar! ===");
+                System.out.println();
+
+            } else if (entrada.equals("2")) {
+                mostrarSobre(scanner);
+
+            } else if (entrada.equals("3")) {
+                sair = true;
+                System.out.println("Ate a proxima, cavaleiro.");
+
+            } else {
+                System.out.println("Opcao invalida. Digite 1, 2 ou 3.");
             }
         }
 
