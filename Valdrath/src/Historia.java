@@ -437,9 +437,7 @@ public class Historia {
         aguardar(scanner);
     }
 
-    // ===================================================================
-    //  ATO 2 — A VILA DE GREYWATCH
-    // ===================================================================
+    // ================== ATO 2 - A VILA DE GREYWATCH ==================
 
     static void ato2(Scanner scanner, Personagem jogador) {
         // A2-01 Chegada
@@ -532,25 +530,21 @@ public class Historia {
         System.out.println("   [3] Levar o que ainda tem valor nesta vila");
         int e2 = lerEscolha(scanner, 3);
 
-        switch (e2) {
-            case 1:
-                honra += 2;
-                vilaSalva = true;
-                confiancaLyra++;
-                jogador.zerarOuro();
-                jogador.gastarPocoes();
-                cenaDoar(scanner);
-                break;
-            case 2:
-                cenaIgnorar(scanner);
-                break;
-            case 3:
-                ambicao += 2;
-                vilaSaqueada = true;
-                confiancaLyra -= 2;
-                jogador.saquearVila();
-                cenaSaquear(scanner);
-                break;
+        if (e2 == 1) {
+            honra += 2;
+            vilaSalva = true;
+            confiancaLyra++;
+            jogador.zerarOuro();
+            jogador.gastarPocoes();
+            cenaDoar(scanner);
+        } else if (e2 == 2) {
+            cenaIgnorar(scanner);
+        } else if (e2 == 3) {
+            ambicao += 2;
+            vilaSaqueada = true;
+            confiancaLyra -= 2;
+            jogador.saquearVila();
+            cenaSaquear(scanner);
         }
 
         // A2-07 Korrin + Loja
@@ -752,9 +746,7 @@ public class Historia {
         aguardar(scanner);
     }
 
-    // ===================================================================
-    //  ATO 3 — AS RUINAS DE KARN
-    // ===================================================================
+    // ================== ATO 3 - AS RUINAS DE KARN ==================
 
     static void ato3(Scanner scanner, Personagem jogador) {
         // A3-01 A descida
@@ -955,22 +947,18 @@ public class Historia {
         System.out.println("   [3] Nao e problema meu. Eu so quero sair daqui.");
         int e4 = lerEscolha(scanner, 3);
 
-        switch (e4) {
-            case 1:
-                honra += 2;
-                verdadeAceita = true;
-                cenaJurar(scanner);
-                break;
-            case 2:
-                ambicao += 2;
-                verdadeAceita = true;
-                pactoVoz = true;
-                cenaCobicar(scanner);
-                break;
-            case 3:
-                verdadeNegada = true;
-                cenaRecusar(scanner);
-                break;
+        if (e4 == 1) {
+            honra += 2;
+            verdadeAceita = true;
+            cenaJurar(scanner);
+        } else if (e4 == 2) {
+            ambicao += 2;
+            verdadeAceita = true;
+            pactoVoz = true;
+            cenaCobicar(scanner);
+        } else if (e4 == 3) {
+            verdadeNegada = true;
+            cenaRecusar(scanner);
         }
 
         // A3-13 Malachar
@@ -1059,9 +1047,7 @@ public class Historia {
         aguardar(scanner);
     }
 
-    // ===================================================================
-    //  ATO 4 — A CIDADELA DA AURORA
-    // ===================================================================
+    // ================== ATO 4 - A CIDADELA DA AURORA ==================
 
     static void ato4(Scanner scanner, Personagem jogador) {
         // A4-01 O retorno
@@ -1176,15 +1162,20 @@ public class Historia {
         System.out.println("   [3] Acabar com isso e ir embora, sem trono nenhum");
         int e5 = lerEscolha(scanner, 3);
 
-        if (e5 == 1 && honra >= 3 && honra > ambicao) {
+        // pra ganhar o final Heroi ou Vilao, o jogador precisa ter pelo
+        // menos 3 pontos daquele lado E mais pontos daquele lado do que
+        // do outro. Guardamos isso em variaveis pra nao repetir a conta.
+        boolean mereceHeroi = honra >= 3 && honra > ambicao;
+        boolean mereceVilao = ambicao >= 3 && ambicao > honra;
+
+        if (e5 == 1 && mereceHeroi) {
             finalHeroi(scanner, jogador);
-        } else if (e5 == 2 && ambicao >= 3 && ambicao > honra) {
+        } else if (e5 == 2 && mereceVilao) {
             finalVilao(scanner, jogador);
         } else {
-            // Se o jogador pede um final que nao merece, a Voz esfrega o
-            // historico na cara dele (A4-07) e cai no final Neutro.
-            if ((e5 == 1 && !(honra >= 3 && honra > ambicao)) ||
-                (e5 == 2 && !(ambicao >= 3 && ambicao > honra))) {
+            // se o jogador pediu um final que nao bateu com o karma dele,
+            // a Voz da Chama debocha antes de cair no final Neutro
+            if ((e5 == 1 && !mereceHeroi) || (e5 == 2 && !mereceVilao)) {
                 cenaSemKarma(scanner);
             }
             finalNeutro(scanner, jogador);
@@ -1204,11 +1195,9 @@ public class Historia {
         aguardar(scanner);
     }
 
-    // ===================================================================
-    //  FINAIS
-    // ===================================================================
+    // ================== FINAIS DA HISTORIA ==================
 
-    // Conta quantos aliados lutam ao seu lado no boss.
+    // conta quantos aliados vao lutar com o jogador no chefe final
     static int aliadosNoBoss() {
         int n = 0;
         if (malacharAliado) n++;
